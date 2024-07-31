@@ -1,0 +1,136 @@
+package com.beizi.p051ad.internal.utilities;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
+import android.telephony.SubscriptionManager;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+import com.beizi.p051ad.lance.p062a.C3019b;
+import com.beizi.p051ad.p056c.EnumType;
+import com.stub.StubApp;
+
+/* renamed from: com.beizi.ad.internal.utilities.UserEnvInfoUtil */
+/* loaded from: E:\fuckcool\tsn\7241516.dex */
+public class UserEnvInfoUtil {
+    public static EnumType.EnumC2815d getNetWorkType(Context context) {
+        NetworkInfo activeNetworkInfo;
+        if (context == null) {
+            return EnumType.EnumC2815d.NET_OTHER;
+        }
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager) StubApp.getOrigApplicationContext(context.getApplicationContext()).getSystemService("connectivity");
+            if (connectivityManager != null && (activeNetworkInfo = connectivityManager.getActiveNetworkInfo()) != null) {
+                int type = activeNetworkInfo.getType();
+                if (1 == type) {
+                    return EnumType.EnumC2815d.NET_WIFI;
+                }
+                if (type == 0) {
+                    int subtype = activeNetworkInfo.getSubtype();
+                    String subtypeName = activeNetworkInfo.getSubtypeName();
+                    switch (subtype) {
+                        case 1:
+                        case 2:
+                        case 4:
+                        case 7:
+                        case 11:
+                        case 16:
+                            return EnumType.EnumC2815d.NET_2G;
+                        case 3:
+                        case 5:
+                        case 6:
+                        case 8:
+                        case 9:
+                        case 10:
+                        case 12:
+                        case 14:
+                        case 15:
+                        case 17:
+                            return EnumType.EnumC2815d.NET_3G;
+                        case 13:
+                        case 18:
+                            return EnumType.EnumC2815d.NET_4G;
+                        case 19:
+                        default:
+                            if (!subtypeName.equalsIgnoreCase("TD-SCDMA") && !subtypeName.equalsIgnoreCase("WCDMA") && !subtypeName.equalsIgnoreCase("CDMA2000")) {
+                                return EnumType.EnumC2815d.NET_OTHER;
+                            }
+                            return EnumType.EnumC2815d.NET_3G;
+                        case 20:
+                            return EnumType.EnumC2815d.NET_5G;
+                    }
+                }
+            }
+            return EnumType.EnumC2815d.NET_OTHER;
+        } catch (Throwable th) {
+            th.printStackTrace();
+            return EnumType.EnumC2815d.NET_OTHER;
+        }
+    }
+
+    private static EnumType.EnumC2815d getNetworkClass(Context context) {
+        return getNetWorkType(context);
+    }
+
+    private static int getSubId() {
+        try {
+            if (Build.VERSION.SDK_INT >= 24) {
+                return SubscriptionManager.getDefaultDataSubscriptionId();
+            }
+            return -1;
+        } catch (Throwable th) {
+            th.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static String getVersionName(Context context) {
+        try {
+            return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+        } catch (Throwable unused) {
+            return "";
+        }
+    }
+
+    private static boolean isServiceStateFiveGAvailable(String str) {
+        return !TextUtils.isEmpty(str) && (str.contains("nrState=NOT_RESTRICTED") || str.contains("nrState=CONNECTED"));
+    }
+
+    public static boolean isUsingWifi(Context context) {
+        return ((ConnectivityManager) StubApp.getOrigApplicationContext(context.getApplicationContext()).getSystemService("connectivity")).getNetworkInfo(1).isConnected();
+    }
+
+    public static void refreshLocation(Context context) {
+        UserEnvInfo.getInstance();
+    }
+
+    public static void retrieveUserEnvInfo(Context context) {
+        if (context != null) {
+            UserEnvInfo userEnvInfo = UserEnvInfo.getInstance();
+            try {
+                userEnvInfo.f47179net = getNetworkClass(context);
+                TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService("phone");
+                if (telephonyManager != null && 5 == telephonyManager.getSimState()) {
+                    String simOperator = telephonyManager.getSimOperator();
+                    if (simOperator != null) {
+                        if (!simOperator.equals("46000") && !simOperator.equals("46002") && !simOperator.equals("46007")) {
+                            if (simOperator.equals("46001")) {
+                                userEnvInfo.isp = EnumType.EnumC2814c.ISP_CN_UNICOM;
+                            } else if (simOperator.equals("46003")) {
+                                userEnvInfo.isp = EnumType.EnumC2814c.ISP_CN_TEL;
+                            }
+                        }
+                        userEnvInfo.isp = EnumType.EnumC2814c.ISP_CN_MOBILE;
+                    } else {
+                        userEnvInfo.isp = EnumType.EnumC2814c.ISP_UNKNOWN;
+                    }
+                }
+            } catch (Throwable th) {
+                th.printStackTrace();
+            }
+            userEnvInfo.f10420ip = C3019b.m49089a("MC4wLjAuMA==");
+            refreshLocation(context);
+        }
+    }
+}

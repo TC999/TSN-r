@@ -1,0 +1,36 @@
+package com.baidu.idl.face.platform;
+
+/* loaded from: E:\fuckcool\tsn\7241516.dex */
+public enum FaceStatusNewEnum {
+    OK,
+    DetectRemindCodeBeyondPreviewFrame,
+    DetectRemindCodeNoFaceDetected,
+    DetectRemindCodeMuchIllumination,
+    DetectRemindCodePoorIllumination,
+    DetectRemindCodeImageBlured,
+    DetectRemindCodeTooFar,
+    DetectRemindCodeTooClose,
+    DetectRemindCodePitchOutofDownRange,
+    DetectRemindCodePitchOutofUpRange,
+    DetectRemindCodeYawOutofLeftRange,
+    DetectRemindCodeYawOutofRightRange,
+    DetectRemindCodeOcclusionLeftEye,
+    DetectRemindCodeOcclusionRightEye,
+    DetectRemindCodeOcclusionNose,
+    DetectRemindCodeOcclusionMouth,
+    DetectRemindCodeOcclusionLeftContour,
+    DetectRemindCodeOcclusionRightContour,
+    DetectRemindCodeOcclusionChinContour,
+    DetectRemindCodeTimeout,
+    FaceLivenessActionTypeLiveEye,
+    FaceLivenessActionTypeLiveMouth,
+    FaceLivenessActionTypeLiveYawRight,
+    FaceLivenessActionTypeLiveYawLeft,
+    FaceLivenessActionTypeLivePitchUp,
+    FaceLivenessActionTypeLivePitchDown,
+    FaceLivenessActionTypeLiveYaw,
+    FaceLivenessActionComplete,
+    FaceLivenessActionCodeTimeout,
+    DetectRemindCodeLeftEyeClosed,
+    DetectRemindCodeRightEyeClosed
+}
