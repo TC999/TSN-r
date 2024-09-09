@@ -1,0 +1,48 @@
+package com.github.mikephil.charting.charts;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.renderer.DataRenderer;
+import com.github.mikephil.charting.renderer.LineChartRenderer;
+
+/* JADX WARN: Classes with same name are omitted:
+  E:\TSN-r\205dec\5141176.dex
+ */
+/* loaded from: E:\TSN-r\205dec\6241084.dex */
+public class LineChart extends BarLineChartBase<LineData> implements LineDataProvider {
+    public LineChart(Context context) {
+        super(context);
+    }
+
+    @Override // com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider
+    public LineData getLineData() {
+        return (LineData) this.mData;
+    }
+
+    /* JADX INFO: Access modifiers changed from: protected */
+    @Override // com.github.mikephil.charting.charts.BarLineChartBase, com.github.mikephil.charting.charts.Chart
+    public void init() {
+        super.init();
+        this.mRenderer = new LineChartRenderer(this, this.mAnimator, this.mViewPortHandler);
+    }
+
+    /* JADX INFO: Access modifiers changed from: protected */
+    @Override // com.github.mikephil.charting.charts.Chart, android.view.ViewGroup, android.view.View
+    public void onDetachedFromWindow() {
+        DataRenderer dataRenderer = this.mRenderer;
+        if (dataRenderer != null && (dataRenderer instanceof LineChartRenderer)) {
+            ((LineChartRenderer) dataRenderer).releaseBitmap();
+        }
+        super.onDetachedFromWindow();
+    }
+
+    public LineChart(Context context, AttributeSet attributeSet) {
+        super(context, attributeSet);
+    }
+
+    public LineChart(Context context, AttributeSet attributeSet, int i4) {
+        super(context, attributeSet, i4);
+    }
+}

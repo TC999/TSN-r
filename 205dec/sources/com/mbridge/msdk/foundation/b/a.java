@@ -1,0 +1,11 @@
+package com.mbridge.msdk.foundation.b;
+
+/* compiled from: FeedbackDialogEventListener.java */
+/* loaded from: E:\TSN-r\205dec\6520572.dex */
+public interface a {
+    void a();
+
+    void a(String str);
+
+    void b();
+}

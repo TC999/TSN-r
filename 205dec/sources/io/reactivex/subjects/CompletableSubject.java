@@ -1,0 +1,181 @@
+package io.reactivex.subjects;
+
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.annotations.CheckReturnValue;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.plugins.RxJavaPlugins;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+/* JADX WARN: Classes with same name are omitted:
+  E:\TSN-r\205dec\5406560.dex
+ */
+/* loaded from: E:\TSN-r\205dec\7343912.dex */
+public final class CompletableSubject extends Completable implements CompletableObserver {
+    static final CompletableDisposable[] EMPTY = new CompletableDisposable[0];
+    static final CompletableDisposable[] TERMINATED = new CompletableDisposable[0];
+    Throwable error;
+    final AtomicBoolean once = new AtomicBoolean();
+    final AtomicReference<CompletableDisposable[]> observers = new AtomicReference<>(EMPTY);
+
+    /* JADX INFO: Access modifiers changed from: package-private */
+    /* JADX WARN: Classes with same name are omitted:
+  E:\TSN-r\205dec\5406560.dex
+ */
+    /* loaded from: E:\TSN-r\205dec\7343912.dex */
+    public static final class CompletableDisposable extends AtomicReference<CompletableSubject> implements Disposable {
+        private static final long serialVersionUID = -7650903191002190468L;
+        final CompletableObserver actual;
+
+        CompletableDisposable(CompletableObserver completableObserver, CompletableSubject completableSubject) {
+            this.actual = completableObserver;
+            lazySet(completableSubject);
+        }
+
+        @Override // io.reactivex.disposables.Disposable
+        public void dispose() {
+            CompletableSubject andSet = getAndSet(null);
+            if (andSet != null) {
+                andSet.remove(this);
+            }
+        }
+
+        @Override // io.reactivex.disposables.Disposable
+        public boolean isDisposed() {
+            return get() == null;
+        }
+    }
+
+    CompletableSubject() {
+    }
+
+    @CheckReturnValue
+    public static CompletableSubject create() {
+        return new CompletableSubject();
+    }
+
+    boolean add(CompletableDisposable completableDisposable) {
+        CompletableDisposable[] completableDisposableArr;
+        CompletableDisposable[] completableDisposableArr2;
+        do {
+            completableDisposableArr = this.observers.get();
+            if (completableDisposableArr == TERMINATED) {
+                return false;
+            }
+            int length = completableDisposableArr.length;
+            completableDisposableArr2 = new CompletableDisposable[length + 1];
+            System.arraycopy(completableDisposableArr, 0, completableDisposableArr2, 0, length);
+            completableDisposableArr2[length] = completableDisposable;
+        } while (!this.observers.compareAndSet(completableDisposableArr, completableDisposableArr2));
+        return true;
+    }
+
+    public Throwable getThrowable() {
+        if (this.observers.get() == TERMINATED) {
+            return this.error;
+        }
+        return null;
+    }
+
+    public boolean hasComplete() {
+        return this.observers.get() == TERMINATED && this.error == null;
+    }
+
+    public boolean hasObservers() {
+        return this.observers.get().length != 0;
+    }
+
+    public boolean hasThrowable() {
+        return this.observers.get() == TERMINATED && this.error != null;
+    }
+
+    int observerCount() {
+        return this.observers.get().length;
+    }
+
+    @Override // io.reactivex.CompletableObserver, io.reactivex.MaybeObserver
+    public void onComplete() {
+        if (this.once.compareAndSet(false, true)) {
+            for (CompletableDisposable completableDisposable : this.observers.getAndSet(TERMINATED)) {
+                completableDisposable.actual.onComplete();
+            }
+        }
+    }
+
+    @Override // io.reactivex.CompletableObserver
+    public void onError(Throwable th) {
+        if (th == null) {
+            th = new NullPointerException("Null errors are not allowed in 2.x");
+        }
+        if (this.once.compareAndSet(false, true)) {
+            this.error = th;
+            for (CompletableDisposable completableDisposable : this.observers.getAndSet(TERMINATED)) {
+                completableDisposable.actual.onError(th);
+            }
+            return;
+        }
+        RxJavaPlugins.onError(th);
+    }
+
+    @Override // io.reactivex.CompletableObserver
+    public void onSubscribe(Disposable disposable) {
+        if (this.observers.get() == TERMINATED) {
+            disposable.dispose();
+        }
+    }
+
+    void remove(CompletableDisposable completableDisposable) {
+        CompletableDisposable[] completableDisposableArr;
+        CompletableDisposable[] completableDisposableArr2;
+        do {
+            completableDisposableArr = this.observers.get();
+            int length = completableDisposableArr.length;
+            if (length == 0) {
+                return;
+            }
+            int i4 = -1;
+            int i5 = 0;
+            while (true) {
+                if (i5 >= length) {
+                    break;
+                } else if (completableDisposableArr[i5] == completableDisposable) {
+                    i4 = i5;
+                    break;
+                } else {
+                    i5++;
+                }
+            }
+            if (i4 < 0) {
+                return;
+            }
+            if (length == 1) {
+                completableDisposableArr2 = EMPTY;
+            } else {
+                CompletableDisposable[] completableDisposableArr3 = new CompletableDisposable[length - 1];
+                System.arraycopy(completableDisposableArr, 0, completableDisposableArr3, 0, i4);
+                System.arraycopy(completableDisposableArr, i4 + 1, completableDisposableArr3, i4, (length - i4) - 1);
+                completableDisposableArr2 = completableDisposableArr3;
+            }
+        } while (!this.observers.compareAndSet(completableDisposableArr, completableDisposableArr2));
+    }
+
+    @Override // io.reactivex.Completable
+    protected void subscribeActual(CompletableObserver completableObserver) {
+        CompletableDisposable completableDisposable = new CompletableDisposable(completableObserver, this);
+        completableObserver.onSubscribe(completableDisposable);
+        if (add(completableDisposable)) {
+            if (completableDisposable.isDisposed()) {
+                remove(completableDisposable);
+                return;
+            }
+            return;
+        }
+        Throwable th = this.error;
+        if (th != null) {
+            completableObserver.onError(th);
+        } else {
+            completableObserver.onComplete();
+        }
+    }
+}

@@ -1,0 +1,21 @@
+package kotlinx.coroutines.flow;
+
+import kotlin.Metadata;
+import kotlinx.coroutines.ExperimentalCoroutinesApi;
+import org.jetbrains.annotations.NotNull;
+
+/* JADX WARN: Classes with same name are omitted:
+  E:\TSN-r\205dec\5406560.dex
+ */
+/* compiled from: SharedFlow.kt */
+@Metadata(bv = {}, d1 = {"\u0000*\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000b\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\b\n\u0002\b\u0004\bf\u0018\u0000*\u0004\b\u0000\u0010\u00012\b\u0012\u0004\u0012\u00028\u00000\u00022\b\u0012\u0004\u0012\u00028\u00000\u0003J\u0017\u0010\u0006\u001a\u00020\u00052\u0006\u0010\u0004\u001a\u00028\u0000H&\u00a2\u0006\u0004\b\u0006\u0010\u0007J\b\u0010\t\u001a\u00020\bH'R\u001a\u0010\u000e\u001a\b\u0012\u0004\u0012\u00020\u000b0\n8&X\u00a6\u0004\u00a2\u0006\u0006\u001a\u0004\b\f\u0010\r\u00a8\u0006\u000f"}, d2 = {"Lkotlinx/coroutines/flow/s;", "T", "Lkotlinx/coroutines/flow/x;", "Lkotlinx/coroutines/flow/i;", "value", "", "b", "(Ljava/lang/Object;)Z", "Lkotlin/f1;", "f", "Lkotlinx/coroutines/flow/h0;", "", "c", "()Lkotlinx/coroutines/flow/h0;", "subscriptionCount", "kotlinx-coroutines-core"}, k = 1, mv = {1, 4, 0})
+/* loaded from: E:\TSN-r\205dec\7343912.dex */
+public interface s<T> extends x<T>, i<T> {
+    boolean b(T t3);
+
+    @NotNull
+    h0<Integer> c();
+
+    @ExperimentalCoroutinesApi
+    void f();
+}
